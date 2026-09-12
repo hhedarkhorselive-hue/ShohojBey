@@ -11,6 +11,7 @@ import {
 import {
   signInWithPopup,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   User as FirebaseUser,
@@ -646,7 +647,7 @@ export default function App() {
 
   const handleEmailSignIn = async () => {
     if (!authPhone.includes('@') || authPassword.length < 6) {
-      showToast('সঠিক ইমেইল ও পাসওয়ার্ড দিন');
+      showToast('সঠিক ইমেইল ও পাসওয়ার্ড (ন্যূনতম ৬ অক্ষরের) দিন');
       return;
     }
     
@@ -660,7 +661,50 @@ export default function App() {
       }
     } catch (error: any) {
       console.error(error);
-      showToast('ইমেইল বা পাসওয়ার্ড ভুল');
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        showToast('ইমেইল বা পাসওয়ার্ড ভুল');
+      } else {
+        showToast('লগইন ব্যর্থ হয়েছে। আবার চেষ্টা করুন');
+      }
+    }
+  };
+
+  const handleEmailSignUp = async () => {
+    if (!authPhone.includes('@') || authPassword.length < 6) {
+      showToast('সঠিক ইমেইল ও পাসওয়ার্ড (ন্যূনতম ৬ অক্ষরের) দিন');
+      return;
+    }
+    if (!authName.trim()) {
+      showToast('অনুগ্রহ করে আপনার পুরো নাম লিখুন');
+      return;
+    }
+
+    try {
+      showToast('অ্যাকাউন্ট তৈরি হচ্ছে...');
+      const result = await createUserWithEmailAndPassword(auth, authPhone.trim(), authPassword);
+      if (result.user) {
+        // Update profile in local state (onAuthStateChanged will handle Firestore)
+        const prof: LocalUserProfile = {
+          uid: result.user.uid,
+          name: authName.trim(),
+          phone: '+880 1712-345678', // Default or could add field
+          email: result.user.email || '',
+          address: address,
+          isRegistered: true,
+        };
+        setUserProfile(prof);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(prof));
+        setShowAuthModal(false);
+        showToast(`🎉 স্বাগতম, ${prof.name}! অ্যাকাউন্ট তৈরি হয়েছে।`);
+        setCurrentScreen('profile');
+      }
+    } catch (error: any) {
+      console.error(error);
+      if (error.code === 'auth/email-already-in-use') {
+        showToast('এই ইমেইলটি ইতিমধ্যে ব্যবহৃত হচ্ছে');
+      } else {
+        showToast('অ্যাকাউন্ট তৈরি করা যায়নি। আবার চেষ্টা করুন');
+      }
     }
   };
 
@@ -669,7 +713,11 @@ export default function App() {
     e.preventDefault();
     
     if (authPhone.includes('@')) {
-      handleEmailSignIn();
+      if (authTab === 'signup') {
+        handleEmailSignUp();
+      } else {
+        handleEmailSignIn();
+      }
       return;
     }
 
@@ -3246,20 +3294,21 @@ export default function App() {
               )}
 
               <div className="field">
-                <label>{authTab === 'login' ? 'মোবাইল নম্বর বা ইমেইল' : 'মোবাইল নম্বর'}</label>
+                <label>মোবাইল নম্বর বা ইমেইল</label>
                 <input
-                  type={authTab === 'login' ? 'text' : 'tel'}
+                  type="text"
                   required
-                  placeholder={authTab === 'login' ? '01XXXXXXXXX বা ইমেইল' : '01XXXXXXXXX'}
+                  placeholder="01XXXXXXXXX বা email@example.com"
                   value={authPhone}
                   onChange={(e) => setAuthPhone(e.target.value)}
                 />
               </div>
 
               <div className="field">
-                <label>গোপন পাসওয়ার্ড / পিন</label>
+                <label>পাসওয়ার্ড (ন্যূনতম ৬ অক্ষর)</label>
                 <input
                   type="password"
+                  required
                   placeholder="••••••"
                   value={authPassword}
                   onChange={(e) => setAuthPassword(e.target.value)}
