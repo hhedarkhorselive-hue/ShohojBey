@@ -75,6 +75,31 @@
         "type": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       }
+    },
+    "Banner": {
+      "title": "Banner",
+      "description": "App home banners",
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" },
+        "link": { "type": "string" },
+        "title": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "PaymentRequest": {
+      "title": "Payment Request",
+      "description": "Verification requests from users",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string" },
+        "trxId": { "type": "string" },
+        "sender": { "type": "string" },
+        "method": { "type": "string" },
+        "amount": { "type": "number" },
+        "userEmail": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "firestore": {
@@ -93,6 +118,14 @@
     "/notices/{noticeId}": {
       "schema": "Notice",
       "description": "Mega deal notices"
+    },
+    "/banners/{bannerId}": {
+      "schema": "Banner",
+      "description": "Home banners"
+    },
+    "/paymentRequests/{requestId}": {
+      "schema": "PaymentRequest",
+      "description": "Payment verification requests"
     },
     "/payment_logs/{logId}": {
       "schema": "object",

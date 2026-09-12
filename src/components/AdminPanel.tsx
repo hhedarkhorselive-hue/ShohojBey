@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { 
   collection, 
   addDoc, 
@@ -69,26 +69,36 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
       const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setProducts(list);
+    }, (err) => {
+      handleFirestoreError(err, OperationType.LIST, 'products');
     });
 
     const unsubOrders = onSnapshot(query(collection(db, 'orders'), orderBy('date', 'desc')), (snapshot) => {
       const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setOrders(list);
+    }, (err) => {
+      handleFirestoreError(err, OperationType.LIST, 'orders');
     });
 
     const unsubNotices = onSnapshot(collection(db, 'notices'), (snapshot) => {
       const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setNotices(list);
+    }, (err) => {
+      handleFirestoreError(err, OperationType.LIST, 'notices');
     });
 
     const unsubPayments = onSnapshot(collection(db, 'paymentRequests'), (snapshot) => {
       const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setPaymentRequests(list);
+    }, (err) => {
+      handleFirestoreError(err, OperationType.LIST, 'paymentRequests');
     });
 
     const unsubBanners = onSnapshot(collection(db, 'banners'), (snapshot) => {
       const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setBanners(list);
+    }, (err) => {
+      handleFirestoreError(err, OperationType.LIST, 'banners');
     });
 
     return () => {
