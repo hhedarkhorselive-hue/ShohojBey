@@ -1,0 +1,6 @@
+{
+  "name": "ShohojBuy Mobile App",
+  "description": "Shop Easy, Live Better - সহজে কেনাকাটা সুন্দর জীবনের জন্য। সেরা পণ্য, সেরা দাম এবং দ্রুত ডেলিভারি।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

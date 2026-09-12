@@ -1,0 +1,102 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and stored shopping state",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "address": { "type": "string" },
+        "district": { "type": "string" },
+        "cart": { "type": "array" },
+        "wishes": { "type": "array" },
+        "orders": { "type": "array" },
+        "notices": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "date": { "type": "string" },
+        "items": { "type": "array" },
+        "total": { "type": "number" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "district": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "status": { "type": "string" },
+        "trackingCode": { "type": "string" },
+        "courier": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "date", "total", "address", "phone"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Store product details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "price": { "type": "number" },
+        "oldPrice": { "type": "number" },
+        "img": { "type": "string" },
+        "badge": { "type": "string" },
+        "colors": { "type": "array" },
+        "sizes": { "type": "array" },
+        "rating": { "type": "number" },
+        "reviews": { "type": "number" },
+        "stock": { "type": "number" },
+        "category": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "Notice": {
+      "title": "Notice",
+      "description": "Promotional notices and deals",
+      "type": "object",
+      "properties": {
+        "tag": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "date": { "type": "string" },
+        "type": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile data and settings"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer orders collection"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Store products"
+    },
+    "/notices/{noticeId}": {
+      "schema": "Notice",
+      "description": "Mega deal notices"
+    },
+    "/payment_logs/{logId}": {
+      "schema": "object",
+      "description": "Payment verification logs"
+    }
+  }
+}
