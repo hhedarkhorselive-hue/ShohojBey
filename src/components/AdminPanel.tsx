@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type TabType = 'dashboard' | 'mega-deal' | 'shop' | 'orders' | 'payments';
+type TabType = 'dashboard' | 'mega-deal' | 'shop' | 'orders' | 'payments' | 'banners';
 
 export default function AdminPanel({ onClose }: { onClose: () => void }) {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -38,8 +38,10 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   const [orders, setOrders] = useState<any[]>([]);
   const [notices, setNotices] = useState<any[]>([]);
   const [paymentRequests, setPaymentRequests] = useState<any[]>([]);
+  const [banners, setBanners] = useState<any[]>([]);
   
   // Product Form State
+  const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [old, setOld] = useState('');
@@ -47,13 +49,19 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('মোবাইল');
   const [description, setDescription] = useState('');
-  const [images, setImages] = useState<string[]>(['', '', '']); // Support up to 3 images
+  const [images, setImages] = useState<string[]>(['', '', '']); 
   const [isMegaDeal, setIsMegaDeal] = useState(false);
   
   // Notice Form State
+  const [editingNotice, setEditingNotice] = useState<any | null>(null);
   const [noticeTitle, setNoticeTitle] = useState('');
   const [noticeMsg, setNoticeMsg] = useState('');
   const [noticeType, setNoticeType] = useState<'urgent' | 'cashback' | 'voucher' | 'stock'>('urgent');
+
+  // Banner Form State
+  const [bannerUrl, setBannerUrl] = useState('');
+  const [bannerLink, setBannerLink] = useState('');
+  const [bannerTitle, setBannerTitle] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -78,11 +86,17 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       setPaymentRequests(list);
     });
 
+    const unsubBanners = onSnapshot(collection(db, 'banners'), (snapshot) => {
+      const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+      setBanners(list);
+    });
+
     return () => {
       unsubProducts();
       unsubOrders();
       unsubNotices();
       unsubPayments();
+      unsubBanners();
     };
   }, []);
 
@@ -91,7 +105,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     setIsSubmitting(true);
     try {
       const filteredImages = images.filter(url => url.trim() !== '');
-      await addDoc(collection(db, 'products'), {
+      const productData = {
         name,
         brand: brand || 'ShohojBuy',
         price: Number(price),
@@ -103,11 +117,24 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
         rating: "5.0",
         stockLeft: 10,
         isMegaDeal,
-        createdAt: new Date().toISOString()
-      });
+        updatedAt: serverTimestamp()
+      };
+
+      if (editingProduct) {
+        await updateDoc(doc(db, 'products', editingProduct.id), productData);
+        alert('প্রোডাক্ট আপডেট হয়েছে!');
+      } else {
+        await addDoc(collection(db, 'products'), {
+          ...productData,
+          createdAt: serverTimestamp()
+        });
+        alert('প্রোডাক্ট সফলভাবে যুক্ত হয়েছে!');
+      }
+      
       // Reset
       setName(''); setPrice(''); setOld(''); setEmoji(''); setBrand(''); setDescription(''); setImages(['', '', '']);
-      alert('প্রোডাক্ট সফলভাবে যুক্ত হয়েছে!');
+      setIsMegaDeal(false);
+      setEditingProduct(null);
     } catch (error) {
       console.error(error);
       alert('ব্যর্থ হয়েছে');
@@ -119,15 +146,42 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     e.preventDefault();
     if (!noticeTitle || !noticeMsg) return;
     try {
-      await addDoc(collection(db, 'notices'), {
+      const noticeData = {
         title: noticeTitle,
         message: noticeMsg,
         type: noticeType,
         date: new Date().toLocaleDateString('bn-BD'),
+        updatedAt: serverTimestamp()
+      };
+
+      if (editingNotice) {
+        await updateDoc(doc(db, 'notices', editingNotice.id), noticeData);
+        alert('নোটিশ আপডেট হয়েছে!');
+      } else {
+        await addDoc(collection(db, 'notices'), {
+          ...noticeData,
+          createdAt: serverTimestamp()
+        });
+        alert('নোটিশ পাঠানো হয়েছে!');
+      }
+      
+      setNoticeTitle(''); setNoticeMsg('');
+      setEditingNotice(null);
+    } catch (error) { console.error(error); }
+  };
+
+  const handleAddBanner = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bannerUrl) return;
+    try {
+      await addDoc(collection(db, 'banners'), {
+        url: bannerUrl,
+        link: bannerLink,
+        title: bannerTitle,
         createdAt: serverTimestamp()
       });
-      setNoticeTitle(''); setNoticeMsg('');
-      alert('নোটিশ পাঠানো হয়েছে!');
+      setBannerUrl(''); setBannerLink(''); setBannerTitle('');
+      alert('ব্যানার যুক্ত হয়েছে!');
     } catch (error) { console.error(error); }
   };
 
@@ -151,6 +205,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
         <nav className="flex-1 space-y-2">
           <SidebarItem icon={<LayoutDashboard size={20}/>} label="ড্যাশবোর্ড" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
           <SidebarItem icon={<Bell size={20}/>} label="মেগা ডিল (নোটিশ)" active={activeTab === 'mega-deal'} onClick={() => setActiveTab('mega-deal')} />
+          <SidebarItem icon={<ImageIcon size={20}/>} label="অ্যাড ব্যানার" active={activeTab === 'banners'} onClick={() => setActiveTab('banners')} />
           <SidebarItem icon={<Package size={20}/>} label="শপ (প্রোডাক্ট)" active={activeTab === 'shop'} onClick={() => setActiveTab('shop')} />
           <SidebarItem icon={<ShoppingBag size={20}/>} label="অর্ডারসমূহ" active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} />
           <SidebarItem icon={<CreditCard size={20}/>} label="পেমেন্ট এরিয়া" active={activeTab === 'payments'} onClick={() => setActiveTab('payments')} />
@@ -229,7 +284,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
               <motion.div key="mega" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-2xl mx-auto space-y-8">
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                   <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
-                    <Bell className="text-emerald-600" /> নতুন নোটিশ পাঠান
+                    <Bell className="text-emerald-600" /> {editingNotice ? 'নোটিশ আপডেট করুন' : 'নতুন নোটিশ পাঠান'}
                   </h3>
                   <form onSubmit={handleSendNotice} className="space-y-4">
                     <div>
@@ -248,7 +303,14 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                         ))}
                       </div>
                     </div>
-                    <button type="submit" className="w-full bg-emerald-600 text-white py-4 rounded-xl font-black shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all">নোটিশ পাবলিশ করুন</button>
+                    <div className="flex gap-3">
+                      <button type="submit" className="flex-1 bg-emerald-600 text-white py-4 rounded-xl font-black shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all">
+                        {editingNotice ? 'আপডেট করুন' : 'নোটিশ পাবলিশ করুন'}
+                      </button>
+                      {editingNotice && (
+                        <button type="button" onClick={() => { setEditingNotice(null); setNoticeTitle(''); setNoticeMsg(''); }} className="bg-gray-200 text-gray-700 px-6 rounded-xl font-bold">বাতিল</button>
+                      )}
+                    </div>
                   </form>
                 </div>
 
@@ -263,7 +325,16 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                           <p className="text-xs text-gray-400">{n.date}</p>
                         </div>
                       </div>
-                      <button onClick={async () => { if(confirm('ডিলিট করবেন?')) await deleteDoc(doc(db, 'notices', n.id)) }} className="text-red-400 p-2"><Trash2 size={18}/></button>
+                      <div className="flex gap-2">
+                        <button onClick={() => {
+                          setEditingNotice(n);
+                          setNoticeTitle(n.title);
+                          setNoticeMsg(n.message);
+                          setNoticeType(n.type);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }} className="text-blue-500 p-2 hover:bg-blue-50 rounded-lg">এডিট</button>
+                        <button onClick={async () => { if(confirm('ডিলিট করবেন?')) await deleteDoc(doc(db, 'notices', n.id)) }} className="text-red-400 p-2"><Trash2 size={18}/></button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -276,7 +347,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                   {/* Add Form */}
                   <div className="lg:w-1/2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
-                      <PlusCircle className="text-emerald-600" /> নতুন প্রোডাক্ট যোগ করুন
+                      <PlusCircle className="text-emerald-600" /> {editingProduct ? 'প্রোডাক্ট এডিট করুন' : 'নতুন প্রোডাক্ট যোগ করুন'}
                     </h3>
                     <form onSubmit={handleAddProduct} className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
@@ -340,9 +411,17 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                         <label className="text-sm font-bold text-gray-700">মেগা ডিল হিসেবে সেট করুন</label>
                       </div>
 
-                      <button disabled={isSubmitting} type="submit" className="w-full bg-emerald-600 text-white py-4 rounded-xl font-black hover:bg-emerald-700 transition-all">
-                        {isSubmitting ? 'আপলোড হচ্ছে...' : 'প্রোডাক্ট পাবলিশ করুন'}
-                      </button>
+                      <div className="flex gap-3">
+                        <button disabled={isSubmitting} type="submit" className="flex-1 bg-emerald-600 text-white py-4 rounded-xl font-black hover:bg-emerald-700 transition-all">
+                          {isSubmitting ? 'প্রসেসিং...' : (editingProduct ? 'আপডেট করুন' : 'প্রোডাক্ট পাবলিশ করুন')}
+                        </button>
+                        {editingProduct && (
+                          <button type="button" onClick={() => { 
+                            setEditingProduct(null); 
+                            setName(''); setPrice(''); setOld(''); setEmoji(''); setBrand(''); setDescription(''); setImages(['', '', '']); setIsMegaDeal(false);
+                          }} className="bg-gray-200 text-gray-700 px-6 rounded-xl font-bold">বাতিল</button>
+                        )}
+                      </div>
                     </form>
                   </div>
 
@@ -363,11 +442,68 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                               {p.isMegaDeal && <span className="text-[10px] bg-orange-100 px-2 py-0.5 rounded-full font-bold text-orange-600 uppercase">Mega Deal</span>}
                             </div>
                           </div>
-                          <button onClick={() => handleDeleteProduct(p.id)} className="text-red-400 p-2 hover:bg-red-50 rounded-lg"><Trash2 size={20}/></button>
+                          <div className="flex gap-1">
+                            <button onClick={() => {
+                              setEditingProduct(p);
+                              setName(p.name);
+                              setPrice(p.price.toString());
+                              setOld(p.old ? p.old.toString() : '');
+                              setEmoji(p.emoji || '');
+                              setBrand(p.brand || '');
+                              setCategory(p.category);
+                              setDescription(p.description || '');
+                              setImages(p.images ? [...p.images, '', ''].slice(0, 3) : ['', '', '']);
+                              setIsMegaDeal(p.isMegaDeal || false);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }} className="text-blue-500 p-2 hover:bg-blue-50 rounded-lg">এডিট</button>
+                            <button onClick={() => handleDeleteProduct(p.id)} className="text-red-400 p-2 hover:bg-red-50 rounded-lg"><Trash2 size={20}/></button>
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'banners' && (
+              <motion.div key="banners" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-2xl mx-auto space-y-8">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                  <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+                    <ImageIcon className="text-emerald-600" /> নতুন ব্যানার অ্যাড করুন
+                  </h3>
+                  <form onSubmit={handleAddBanner} className="space-y-4">
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase">ব্যানার ইমেজ URL</label>
+                      <input value={bannerUrl} onChange={e => setBannerUrl(e.target.value)} required type="text" className="w-full mt-1 bg-gray-50 border-none p-3 rounded-xl" placeholder="https://..." />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase">ব্যানার টাইটেল (ঐচ্ছিক)</label>
+                      <input value={bannerTitle} onChange={e => setBannerTitle(e.target.value)} type="text" className="w-full mt-1 bg-gray-50 border-none p-3 rounded-xl" placeholder="যেমন: নতুন আইফোন অফার" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase">লিংক (ঐচ্ছিক)</label>
+                      <input value={bannerLink} onChange={e => setBannerLink(e.target.value)} type="text" className="w-full mt-1 bg-gray-50 border-none p-3 rounded-xl" placeholder="যেমন: /megadeal" />
+                    </div>
+                    <button type="submit" className="w-full bg-emerald-600 text-white py-4 rounded-xl font-black shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all">ব্যানার যুক্ত করুন</button>
+                  </form>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-bold text-gray-800">লাইভ ব্যানারসমূহ ({banners.length})</h3>
+                  {banners.map(b => (
+                    <div key={b.id} className="bg-white p-4 rounded-xl border border-gray-100 flex flex-col gap-3">
+                      <img src={b.url} alt="" className="w-full h-32 object-cover rounded-lg" />
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-bold text-sm">{b.title || 'Untitled Banner'}</p>
+                          <p className="text-xs text-gray-400">{b.link || 'No Link'}</p>
+                        </div>
+                        <button onClick={async () => { if(confirm('ব্যানারটি ডিলিট করবেন?')) await deleteDoc(doc(db, 'banners', b.id)) }} className="text-red-400 p-2"><Trash2 size={18}/></button>
+                      </div>
+                    </div>
+                  ))}
+                  {banners.length === 0 && <p className="text-gray-400 text-center py-10 font-bold uppercase tracking-widest">No Banners Added</p>}
                 </div>
               </motion.div>
             )}
@@ -512,6 +648,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
       <div className="md:hidden bg-white border-t px-2 py-2 flex justify-around">
         <MobileNavItem icon={<LayoutDashboard size={20}/>} active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
         <MobileNavItem icon={<Bell size={20}/>} active={activeTab === 'mega-deal'} onClick={() => setActiveTab('mega-deal')} />
+        <MobileNavItem icon={<ImageIcon size={20}/>} active={activeTab === 'banners'} onClick={() => setActiveTab('banners')} />
         <MobileNavItem icon={<Package size={20}/>} active={activeTab === 'shop'} onClick={() => setActiveTab('shop')} />
         <MobileNavItem icon={<ShoppingBag size={20}/>} active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} />
         <MobileNavItem icon={<CreditCard size={20}/>} active={activeTab === 'payments'} onClick={() => setActiveTab('payments')} />

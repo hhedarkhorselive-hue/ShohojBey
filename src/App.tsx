@@ -83,6 +83,13 @@ export interface DealNotice {
   type: 'urgent' | 'cashback' | 'voucher' | 'stock';
 }
 
+export interface Banner {
+  id: string;
+  url: string;
+  link?: string;
+  title?: string;
+}
+
 export interface LocalUserProfile {
   uid: string;
   name: string;
@@ -195,6 +202,7 @@ export default function App() {
 
   // Notices & Mega Deals State
   const [notices, setNotices] = useState<DealNotice[]>(INITIAL_NOTICES);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [newNoticeTitle, setNewNoticeTitle] = useState<string>('');
   const [newNoticeMsg, setNewNoticeMsg] = useState<string>('');
   const [showNoticeForm, setShowNoticeForm] = useState<boolean>(false);
@@ -226,7 +234,7 @@ export default function App() {
 
   // Authentication & Persistent User State
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
-  const isAdmin = firebaseUser?.email === 'shariartech2010@gmail.com';
+  const isAdmin = firebaseUser?.email === 'shariartech2010@gmail.com' || firebaseUser?.email === 'thedavid6758@gmail.com';
   
   const [userProfile, setUserProfile] = useState<LocalUserProfile | null>(() => {
     try {
@@ -299,7 +307,7 @@ export default function App() {
     });
 
     // 2. Notices Listener
-    const qNotices = query(collection(db, 'notices'));
+    const qNotices = query(collection(db, 'notices'), orderBy('createdAt', 'desc'));
     const unsubNotices = onSnapshot(qNotices, (snapshot) => {
       if (!snapshot.empty) {
         const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as DealNotice));
@@ -309,6 +317,19 @@ export default function App() {
       }
     }, (err) => {
       handleFirestoreError(err, OperationType.LIST, 'notices');
+    });
+
+    // 2.1 Banners Listener
+    const qBanners = query(collection(db, 'banners'), orderBy('createdAt', 'desc'));
+    const unsubBanners = onSnapshot(qBanners, (snapshot) => {
+      if (!snapshot.empty) {
+        const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Banner));
+        setBanners(list);
+      } else {
+        setBanners([]);
+      }
+    }, (err) => {
+      handleFirestoreError(err, OperationType.LIST, 'banners');
     });
 
     // 3. User Specific Orders Listener (if logged in)
@@ -333,6 +354,7 @@ export default function App() {
     return () => {
       unsubProducts();
       unsubNotices();
+      unsubBanners();
       if (unsubOrders) unsubOrders();
     };
   }, [firebaseUser]);
@@ -535,8 +557,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    // Admin check - do not auto open, just log status
     if (isAdmin) {
-      setIsAdminOpen(true);
+      console.log("Admin access granted.");
     }
   }, [isAdmin]);
 
@@ -1302,25 +1325,47 @@ export default function App() {
             </form>
           </div>
 
-          {/* Hero Banner */}
-          <div className="hero">
-            <div className="heroCopy">
-              <span className="pill">🔥 স্পেশাল অফার</span>
-              <h1>
-                Shohoj<span>Buy</span>
-              </h1>
-              <h3>আপনার বিশ্বস্ত স্মার্ট গ্যাজেট পার্টনার!</h3>
-              <p>১০০% আসল প্রোডাক্ট, ধামাকা মূল্যছাড় এবং দ্রুততম ডেলিভারি।</p>
-              <button onClick={() => navigateTo('megadeal')} id="heroBuyBtn">মেগা ডিল দেখুন 🔥</button>
+          {/* Hero Banner / Dynamic Banners */}
+          {banners.length > 0 ? (
+            <div className="banners-container" style={{ margin: '15px', borderRadius: '20px', overflow: 'hidden' }}>
+              <div className="banner-grid" style={{ display: 'grid', gridTemplateColumns: banners.length > 1 ? '1fr 1fr' : '1fr', gap: '10px' }}>
+                {banners.slice(0, 2).map((banner) => (
+                  <div 
+                    key={banner.id} 
+                    className="banner-item" 
+                    onClick={() => banner.link && (banner.link.startsWith('/') ? navigateTo(banner.link.substring(1) as any) : window.open(banner.link, '_blank'))}
+                    style={{ cursor: 'pointer', position: 'relative', height: '160px', borderRadius: '15px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}
+                  >
+                    <img src={banner.url} alt={banner.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    {banner.title && (
+                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px', background: 'linear-gradient(transparent, rgba(0,0,0,0.7))', color: 'white', fontSize: '12px', fontWeight: 'bold' }}>
+                        {banner.title}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="heroArt">
-              <div className="artPhone"></div>
-              <div className="artPhone two"></div>
-              <div className="artLaptop"></div>
-              <div className="artWatch"></div>
-              <div className="artPods">🎧</div>
+          ) : (
+            <div className="hero">
+              <div className="heroCopy">
+                <span className="pill">🔥 স্পেশাল অফার</span>
+                <h1>
+                  Shohoj<span>Buy</span>
+                </h1>
+                <h3>আপনার বিশ্বস্ত স্মার্ট গ্যাজেট পার্টনার!</h3>
+                <p>১০০% আসল প্রোডাক্ট, ধামাকা মূল্যছাড় এবং দ্রুততম ডেলিভারি।</p>
+                <button onClick={() => navigateTo('megadeal')} id="heroBuyBtn">মেগা ডিল দেখুন 🔥</button>
+              </div>
+              <div className="heroArt">
+                <div className="artPhone"></div>
+                <div className="artPhone two"></div>
+                <div className="artLaptop"></div>
+                <div className="artWatch"></div>
+                <div className="artPods">🎧</div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Feature Trust Row */}
           <div className="featureRow">
@@ -1455,45 +1500,6 @@ export default function App() {
               </div>
             </div>
           </div>
-
-          {/* Optional Post New Notice Form */}
-          {showNoticeForm && (
-            <div style={{ margin: '0 12px 14px', background: '#fff', border: '1.5px solid #fed7aa', borderRadius: '12px', padding: '12px' }}>
-              <b style={{ fontSize: '11px', color: '#9a3412', display: 'block', marginBottom: '6px' }}>
-                📢 নতুন মেগা ডিল / অফার নোটিশ প্রকাশ করুন
-              </b>
-              <form onSubmit={handlePostNotice}>
-                <input
-                  style={{ width: '100%', height: '36px', border: '1px solid #e5ecea', borderRadius: '7px', padding: '0 10px', fontSize: '10px', marginBottom: '6px' }}
-                  placeholder="নোটিশ শিরোনাম (যেমনঃ বিশেষ ঈদ অফার)"
-                  value={newNoticeTitle}
-                  onChange={(e) => setNewNoticeTitle(e.target.value)}
-                />
-                <textarea
-                  style={{ width: '100%', height: '54px', border: '1px solid #e5ecea', borderRadius: '7px', padding: '6px 10px', fontSize: '10px', marginBottom: '8px', resize: 'none' }}
-                  placeholder="অফারের বিস্তারিত তথ্য ও নিয়ম..."
-                  value={newNoticeMsg}
-                  onChange={(e) => setNewNoticeMsg(e.target.value)}
-                />
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <button
-                    type="submit"
-                    className="green"
-                    style={{ flex: 1, height: '34px', borderRadius: '7px', fontSize: '10px', fontWeight: 800 }}
-                  >
-                    ✓ প্রকাশ করুন
-                  </button>
-                  <button
-                    type="button"
-                    style={{ background: '#f1f5f4', color: '#666', padding: '0 12px', borderRadius: '7px', fontSize: '10px', fontWeight: 700 }}
-                    onClick={() => setShowNoticeForm(false)}
-                  >
-                    বাতিল
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
 
           {/* Special Notices & Vouchers Feed */}
           <div className="section">
