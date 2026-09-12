@@ -45,10 +45,12 @@ export interface Product {
   old: number;
   rating: string;
   emoji: string;
+  images?: string[]; // Multiple images support
   sale?: string;
   category: string;
   description?: string;
   stockLeft?: number;
+  isMegaDeal?: boolean;
 }
 
 export interface CartItem extends Product {
@@ -1393,7 +1395,13 @@ export default function App() {
                   >
                     {wishes.some((w) => w.id === p.id) ? '♥' : '♡'}
                   </button>
-                  <div className="pimg">{p.emoji}</div>
+                  <div className="pimg">
+                    {p.images && p.images[0] ? (
+                      <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    ) : (
+                      p.emoji
+                    )}
+                  </div>
                   <div className="pi">
                     <h4>{p.name}</h4>
                     <small>{p.brand}</small>
@@ -1530,7 +1538,7 @@ export default function App() {
               <a onClick={() => navigateTo('listing')}>সব পণ্য →</a>
             </div>
             <div className="products">
-              {products.map((p) => (
+              {products.filter(p => p.isMegaDeal).map((p) => (
                 <article
                   key={p.id}
                   className="product"
@@ -1544,7 +1552,13 @@ export default function App() {
                   >
                     {wishes.some((w) => w.id === p.id) ? '♥' : '♡'}
                   </button>
-                  <div className="pimg">{p.emoji}</div>
+                  <div className="pimg">
+                    {p.images && p.images[0] ? (
+                      <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    ) : (
+                      p.emoji
+                    )}
+                  </div>
                   <div className="pi">
                     <h4>{p.name}</h4>
                     <small>{p.brand}</small>
@@ -1592,7 +1606,25 @@ export default function App() {
           {/* Unified Scroll View: Product Image, Details, Specs, Category Carousel, and Trending Products */}
           <div className="detailScroll" id="detailScrollContainer">
             <div className="detailImg" id="detailImg">
-              {currentProduct.emoji}
+              {currentProduct.images && currentProduct.images.length > 0 ? (
+                <div style={{ width: '100%', height: '100%', overflowX: 'auto', display: 'flex', scrollSnapType: 'x mandatory' }}>
+                  {currentProduct.images.map((img, i) => (
+                    <img 
+                      key={i} 
+                      src={img} 
+                      alt="" 
+                      style={{ 
+                        minWidth: '100%', 
+                        height: '100%', 
+                        objectFit: 'contain', 
+                        scrollSnapAlign: 'start' 
+                      }} 
+                    />
+                  ))}
+                </div>
+              ) : (
+                currentProduct.emoji
+              )}
             </div>
 
             <div className="detail" id="detailInfo">
@@ -1687,7 +1719,13 @@ export default function App() {
                     onClick={() => openProductDetail(p)}
                   >
                     {p.sale && <span className="sale">{p.sale}</span>}
-                    <div className="pimg" style={{ height: '95px', fontSize: '42px' }}>{p.emoji}</div>
+                    <div className="pimg" style={{ height: '95px', fontSize: '42px' }}>
+                      {p.images && p.images[0] ? (
+                        <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      ) : (
+                        p.emoji
+                      )}
+                    </div>
                     <div className="pi">
                       <h4>{p.name}</h4>
                       <small>{p.brand}</small>
@@ -1775,7 +1813,13 @@ export default function App() {
                     >
                       {wishes.some((w) => w.id === p.id) ? '♥' : '♡'}
                     </button>
-                    <div className="pimg">{p.emoji}</div>
+                    <div className="pimg">
+                      {p.images && p.images[0] ? (
+                        <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      ) : (
+                        p.emoji
+                      )}
+                    </div>
                     <div className="pi">
                       <h4>{p.name}</h4>
                       <small>{p.brand}</small>
@@ -1816,7 +1860,13 @@ export default function App() {
                     onClick={() => openProductDetail(p)}
                   >
                     {p.sale && <span className="sale">{p.sale}</span>}
-                    <div className="pimg">{p.emoji}</div>
+                    <div className="pimg">
+                      {p.images && p.images[0] ? (
+                        <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      ) : (
+                        p.emoji
+                      )}
+                    </div>
                     <div className="pi">
                       <h4>{p.name}</h4>
                       <small>{p.brand}</small>
@@ -2354,13 +2404,13 @@ export default function App() {
                         try {
                           // Update Firestore status and Transaction ID
                           const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'), limit(10));
-                          // Note: In real app, search for the specific doc by ID string
-                          // But here we'll update the orders collection
-                          await addDoc(collection(db, 'payment_logs'), {
+                          await addDoc(collection(db, 'paymentRequests'), {
                             orderId: lastPlacedOrder.id,
                             trxId: gatewayTrxId,
                             sender: gatewaySenderPhone,
                             method: paymentGatewayMethod,
+                            userEmail: userProfile?.email || 'N/A',
+                            amount: lastPlacedOrder.total,
                             timestamp: serverTimestamp()
                           });
                           
