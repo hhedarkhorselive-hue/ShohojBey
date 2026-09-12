@@ -7,7 +7,25 @@ import {
   User,
   ShoppingBag,
   Sparkles,
+  LayoutDashboard,
+  Search,
+  Heart,
+  ChevronRight,
+  Star,
+  Clock,
+  Truck,
+  ShieldCheck,
+  ArrowLeft,
+  Plus,
+  Minus,
+  X,
+  ChevronLeft,
+  Share2,
+  Trash2,
+  Bell,
+  ImageIcon
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   signInWithPopup,
   signInWithEmailAndPassword,
@@ -36,6 +54,8 @@ import {
   handleFirestoreError,
   OperationType,
 } from './lib/firebase';
+import AdminDashboard from './components/Admin/AdminDashboard';
+import AdminPanel from './components/AdminPanel';
 
 export interface Product {
   id: string | number;
@@ -115,8 +135,6 @@ export const INITIAL_PRODUCTS: Product[] = [];
 export const INITIAL_NOTICES: DealNotice[] = [];
 
 export const INITIAL_ORDERS: OrderItem[] = [];
-
-import AdminPanel from './components/AdminPanel';
 
 export function money(n: number): string {
   return '৳ ' + n.toLocaleString('en-IN');
@@ -1325,24 +1343,45 @@ export default function App() {
             </form>
           </div>
 
-          {/* Hero Banner / Dynamic Banners */}
+          {/* Dynamic Banners Section */}
           {banners.length > 0 ? (
-            <div className="banners-container" style={{ margin: '15px', borderRadius: '20px', overflow: 'hidden' }}>
-              <div className="banner-grid" style={{ display: 'grid', gridTemplateColumns: banners.length > 1 ? '1fr 1fr' : '1fr', gap: '10px' }}>
-                {banners.slice(0, 2).map((banner) => (
-                  <div 
+            <div className="banners-section" style={{ padding: '0 15px', marginBottom: '20px' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: banners.length === 1 ? '1fr' : '1fr 1fr', 
+                gap: '12px' 
+              }}>
+                {banners.map((banner) => (
+                  <motion.div 
+                    whileTap={{ scale: 0.98 }}
                     key={banner.id} 
-                    className="banner-item" 
-                    onClick={() => banner.link && (banner.link.startsWith('/') ? navigateTo(banner.link.substring(1) as any) : window.open(banner.link, '_blank'))}
-                    style={{ cursor: 'pointer', position: 'relative', height: '160px', borderRadius: '15px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}
+                    onClick={() => {
+                      if (banner.link) {
+                        if (banner.link.startsWith('/')) navigateTo(banner.link.substring(1) as any);
+                        else window.open(banner.link, '_blank');
+                      }
+                    }}
+                    style={{ 
+                      height: banners.length === 1 ? '180px' : '140px', 
+                      borderRadius: '18px', 
+                      overflow: 'hidden',
+                      position: 'relative',
+                      boxShadow: '0 8px 20px rgba(0,0,0,0.08)'
+                    }}
                   >
-                    <img src={banner.url} alt={banner.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={banner.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     {banner.title && (
-                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px', background: 'linear-gradient(transparent, rgba(0,0,0,0.7))', color: 'white', fontSize: '12px', fontWeight: 'bold' }}>
-                        {banner.title}
+                      <div style={{ 
+                        position: 'absolute', 
+                        bottom: 0, left: 0, right: 0, 
+                        padding: '12px', 
+                        background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                        color: 'white'
+                      }}>
+                        <p style={{ fontSize: '12px', fontWeight: '800', margin: 0 }}>{banner.title}</p>
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -2894,29 +2933,31 @@ export default function App() {
             </div>
 
             {isAdmin && (
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={() => setIsAdminOpen(true)}
                 style={{
-                  background: '#059669',
+                  background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
                   color: '#fff',
                   width: 'calc(100% - 32px)',
                   margin: '0 16px 20px',
-                  padding: '16px',
-                  borderRadius: '16px',
+                  padding: '20px',
+                  borderRadius: '20px',
                   fontWeight: 900,
-                  fontSize: '14px',
+                  fontSize: '15px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '10px',
-                  boxShadow: '0 10px 20px rgba(5, 150, 105, 0.2)',
+                  gap: '12px',
+                  boxShadow: '0 12px 25px rgba(5, 150, 105, 0.25)',
                   border: 'none',
                   cursor: 'pointer'
                 }}
               >
-                <span style={{ fontSize: '20px' }}>⚙️</span> অ্যাডমিন প্যানেল ওপেন করুন
-              </button>
+                <LayoutDashboard size={24} /> Admin Dashboard (Shop Control)
+              </motion.button>
             )}
 
             {/* Account Services */}
@@ -4107,7 +4148,7 @@ export default function App() {
 
       {/* ADMIN PANEL */}
       {isAdminOpen && (
-        <AdminPanel onClose={() => setIsAdminOpen(false)} />
+        <AdminDashboard onClose={() => setIsAdminOpen(false)} />
       )}
 
       {/* TOAST NOTIFICATION */}

@@ -59,6 +59,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
   const [noticeType, setNoticeType] = useState<'urgent' | 'cashback' | 'voucher' | 'stock'>('urgent');
 
   // Banner Form State
+  const [editingBanner, setEditingBanner] = useState<any | null>(null);
   const [bannerUrl, setBannerUrl] = useState('');
   const [bannerLink, setBannerLink] = useState('');
   const [bannerTitle, setBannerTitle] = useState('');
@@ -184,14 +185,26 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
     e.preventDefault();
     if (!bannerUrl) return;
     try {
-      await addDoc(collection(db, 'banners'), {
+      const bannerData = {
         url: bannerUrl,
         link: bannerLink,
         title: bannerTitle,
-        createdAt: serverTimestamp()
-      });
+        updatedAt: serverTimestamp()
+      };
+
+      if (editingBanner) {
+        await updateDoc(doc(db, 'banners', editingBanner.id), bannerData);
+        alert('ব্যানার আপডেট হয়েছে!');
+      } else {
+        await addDoc(collection(db, 'banners'), {
+          ...bannerData,
+          createdAt: serverTimestamp()
+        });
+        alert('ব্যানার যুক্ত হয়েছে!');
+      }
+      
       setBannerUrl(''); setBannerLink(''); setBannerTitle('');
-      alert('ব্যানার যুক্ত হয়েছে!');
+      setEditingBanner(null);
     } catch (error) { console.error(error); }
   };
 
@@ -480,7 +493,7 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
               <motion.div key="banners" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-2xl mx-auto space-y-8">
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                   <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
-                    <ImageIcon className="text-emerald-600" /> নতুন ব্যানার অ্যাড করুন
+                    <ImageIcon className="text-emerald-600" /> {editingBanner ? 'ব্যানার এডিট করুন' : 'নতুন ব্যানার অ্যাড করুন'}
                   </h3>
                   <form onSubmit={handleAddBanner} className="space-y-4">
                     <div>
@@ -495,7 +508,14 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                       <label className="text-xs font-bold text-gray-500 uppercase">লিংক (ঐচ্ছিক)</label>
                       <input value={bannerLink} onChange={e => setBannerLink(e.target.value)} type="text" className="w-full mt-1 bg-gray-50 border-none p-3 rounded-xl" placeholder="যেমন: /megadeal" />
                     </div>
-                    <button type="submit" className="w-full bg-emerald-600 text-white py-4 rounded-xl font-black shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all">ব্যানার যুক্ত করুন</button>
+                    <div className="flex gap-3">
+                      <button type="submit" className="flex-1 bg-emerald-600 text-white py-4 rounded-xl font-black shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all">
+                        {editingBanner ? 'আপডেট করুন' : 'ব্যানার যুক্ত করুন'}
+                      </button>
+                      {editingBanner && (
+                        <button type="button" onClick={() => { setEditingBanner(null); setBannerUrl(''); setBannerLink(''); setBannerTitle(''); }} className="bg-gray-200 text-gray-700 px-6 rounded-xl font-bold">বাতিল</button>
+                      )}
+                    </div>
                   </form>
                 </div>
 
@@ -509,7 +529,16 @@ export default function AdminPanel({ onClose }: { onClose: () => void }) {
                           <p className="font-bold text-sm">{b.title || 'Untitled Banner'}</p>
                           <p className="text-xs text-gray-400">{b.link || 'No Link'}</p>
                         </div>
-                        <button onClick={async () => { if(confirm('ব্যানারটি ডিলিট করবেন?')) await deleteDoc(doc(db, 'banners', b.id)) }} className="text-red-400 p-2"><Trash2 size={18}/></button>
+                        <div className="flex gap-2">
+                          <button onClick={() => {
+                            setEditingBanner(b);
+                            setBannerUrl(b.url);
+                            setBannerTitle(b.title || '');
+                            setBannerLink(b.link || '');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }} className="text-blue-500 p-2 hover:bg-blue-50 rounded-lg">এডিট</button>
+                          <button onClick={async () => { if(confirm('ব্যানারটি ডিলিট করবেন?')) await deleteDoc(doc(db, 'banners', b.id)) }} className="text-red-400 p-2"><Trash2 size={18}/></button>
+                        </div>
                       </div>
                     </div>
                   ))}
