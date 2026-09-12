@@ -1,12 +1,12 @@
 {
-  "projectId": "gen-lang-client-0751079822",
-  "appId": "1:1036898145135:web:26d5b4275d049def3cce9a",
-  "apiKey": "AIzaSyBNlLTqa6Mt_okr_ybIiMFDuDA4-iPNkLE",
-  "authDomain": "gen-lang-client-0751079822.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-aade101b-2b3e-4a53-abfa-5a3581f9098d",
-  "storageBucket": "gen-lang-client-0751079822.firebasestorage.app",
-  "messagingSenderId": "1036898145135",
+  "projectId": "shohojbuy-mobile-app",
+  "appId": "1:1062402478790:web:914f8131f4532022183dc7",
+  "apiKey": "AIzaSyB6v6ppw6pufQUmRm9VjlfudJs2HDYcNSk",
+  "authDomain": "shohojbuy-mobile-app.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "shohojbuy-mobile-app.firebasestorage.app",
+  "messagingSenderId": "1062402478790",
   "measurementId": "",
-  "oAuthClientId": "1036898145135-7orq02s90vogie4nbd9jlctkl1ga8tsq.apps.googleusercontent.com",
+  "oAuthClientId": "1062402478790-4gbiufhcrgdqg8nr19cf3mjhhsf8hlpk.apps.googleusercontent.com",
   "recaptchaSiteKey": ""
 }

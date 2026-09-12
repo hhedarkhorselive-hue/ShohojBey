@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import {
   signInWithPopup,
+  signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   User as FirebaseUser,
@@ -99,69 +100,13 @@ export const PAYMENT_METHODS = [
   { id: 'Pathao Pay', name: 'পাঠাও পে', bg: '#fff1f2', color: '#ef4444', number: '01366-778899', img: 'https://i.postimg.cc/PJ30mrVF/pathao-pay-logo-png-seeklogo-677397.png' },
 ];
 
-export const INITIAL_PRODUCTS: Product[] = [
-  { id: 1, name: 'iPhone 16 Pro (256GB)', brand: 'Apple', price: 130000, old: 152000, rating: '4.9 (142)', emoji: '📱', sale: '-15%', category: 'মোবাইল', description: 'অরিজিনাল অ্যাপল অফিসিয়াল ওয়ারেন্টি সহ A18 Pro চিপসেট ও প্রো ক্যামেরা সিস্টেম।', stockLeft: 4 },
-  { id: 2, name: 'Samsung Galaxy S24 Ultra', brand: 'Samsung', price: 119990, old: 139990, rating: '4.8 (98)', emoji: '📱', sale: '-14%', category: 'মোবাইল', description: 'গ্যালাক্সি AI ফিচার, ২০০ মেগাপিক্সেল ক্যামেরা ও বিল্ট-ইন এস-পেন।', stockLeft: 7 },
-  { id: 3, name: 'Xiaomi Redmi Note 13 Pro', brand: 'Xiaomi', price: 32990, old: 36990, rating: '4.7 (84)', emoji: '📱', sale: '-11%', category: 'মোবাইল', description: '১২০Hz অ্যামোলেড ডিসপ্লে ও ৬৭ ওয়াট টার্বো ফাস্ট চার্জিং।', stockLeft: 12 },
-  { id: 4, name: 'Realme Narzo 70 Pro 5G', brand: 'Realme', price: 24990, old: 28990, rating: '4.6 (62)', emoji: '📱', sale: '-14%', category: 'মোবাইল', description: 'সুপার ফাস্ট চার্জিং, ফ্লুইড ডিসপ্লে ও আকর্ষণীয় গ্লাস ডিজাইন।', stockLeft: 9 },
-  { id: 5, name: 'AirPods Pro (2nd Gen)', brand: 'Apple', price: 28990, old: 32990, rating: '4.9 (110)', emoji: '🎧', sale: '-12%', category: 'ইলেকট্রনিক্স', description: 'অ্যাক্টিভ নয়েজ ক্যান্সেলেশন সহ ক্রিস্টাল ক্লিয়ার অডিও ও স্পেশাল সাউন্ড।', stockLeft: 6 },
-  { id: 6, name: 'Galaxy Watch 6 Classic', brand: 'Samsung', price: 24990, old: 27990, rating: '4.7 (75)', emoji: '⌚', sale: '-10%', category: 'ইলেকট্রনিক্স', description: 'স্মার্ট হেলথ ও স্লিপ ট্র্যাকিং এবং প্রিমিয়াম রোটেটিং বেজেল।', stockLeft: 8 },
-  { id: 7, name: 'ASUS Vivobook 15 OLED', brand: 'ASUS', price: 64990, old: 79990, rating: '4.8 (56)', emoji: '💻', sale: '-19%', category: 'ল্যাপটপ', description: 'অসাধারণ ওলেড কালার ডিসপ্লে, দ্রুতগতির প্রসেসর ও অল-ডে ব্যাটারি ব্যাকআপ।', stockLeft: 3 },
-  { id: 8, name: 'Sony WH-1000XM5 Wireless', brand: 'Sony', price: 34990, old: 41990, rating: '4.9 (67)', emoji: '🎧', sale: '-16%', category: 'ইলেকট্রনিক্স', description: 'ইন্ডাস্ট্রি সেরা নয়েজ ক্যান্সেলেশন হেডফোন ও ৩০ ঘণ্টার দীর্ঘস্থায়ী ব্যাটারি।', stockLeft: 5 },
-  { id: 9, name: 'MacBook Air M3 (13-inch)', brand: 'Apple', price: 124990, old: 139990, rating: '4.9 (88)', emoji: '💻', sale: '-11%', category: 'ল্যাপটপ', description: 'অবিশ্বাস্য পারফরম্যান্স, অল-ডে ১৮ ঘণ্টার ব্যাটারি ও লাইটওয়েট স্লিম বডি।', stockLeft: 5 },
-  { id: 10, name: 'Apple Watch Series 9', brand: 'Apple', price: 46990, old: 52990, rating: '4.8 (72)', emoji: '⌚', sale: '-11%', category: 'ইলেকট্রনিক্স', description: 'ডাবল ট্যাপ জেসচার ও উন্নত হার্ট রেট এবং হেলথ সেন্সর।', stockLeft: 4 },
-];
+export const INITIAL_PRODUCTS: Product[] = [];
 
-export const INITIAL_NOTICES: DealNotice[] = [
-  {
-    id: 'not_1',
-    tag: '📢 স্পেশাল নোটিশ',
-    title: 'সারা দেশে ১০০% ফ্রি হোম ডেলিভারি চালু!',
-    message: 'আজকের যেকোনো মেগা ডিল ও অর্ডারে কোনো ডেলিভারি চার্জ লাগবে না। অফারটি দ্রুত শেষ হবে!',
-    date: 'আজকের আপডেট',
-    couponCode: 'FREEBD',
-    discount: 'ফ্রি ডেলিভারি',
-    type: 'urgent',
-  },
-  {
-    id: 'not_2',
-    tag: '🎁 বিকাশ ও নগদ ক্যাশব্যাক',
-    title: 'বিকাশ ও নগদ পেমেন্টে নিশ্চিত ১০% ক্যাশব্যাক!',
-    message: 'অনলাইন চেকআউটে বিকাশ বা নগদ বেছে নিন এবং সাথে সাথে সর্বোচ্চ ১০০০ টাকা পর্যন্ত ক্যাশব্যাক উপভোগ করুন।',
-    date: 'সীমিত সময়ের জন্য',
-    type: 'cashback',
-  },
-  {
-    id: 'not_3',
-    tag: '🎟️ মেগা ডিসকাউন্ট ভাউচার',
-    title: '৫০০ টাকা এক্সট্রা ছাড়ের মেগা কুপন',
-    message: 'চেকআউটে নিচের প্রোমোকোডটি ব্যবহার করলেই মোট বিলের উপর অতিরিক্ত ৫০০ টাকা ছাড় প্রযোজ্য হবে।',
-    date: 'মেগা ডিল এক্সক্লুসিভ',
-    couponCode: 'MEGA500',
-    discount: '৳ ৫০০ ছাড়',
-    type: 'voucher',
-  },
-];
+export const INITIAL_NOTICES: DealNotice[] = [];
 
-export const INITIAL_ORDERS: OrderItem[] = [
-  {
-    id: 'SB1248',
-    customerName: 'শাহরিয়ার আল শাকিব',
-    date: '12 Sep 2026, 10:24 AM',
-    items: [
-      { ...INITIAL_PRODUCTS[0], qty: 1 },
-      { ...INITIAL_PRODUCTS[4], qty: 1 }
-    ],
-    total: 158990 + 60,
-    address: 'বাড়ি ১২, রোড ৪, ধানমন্ডি, ঢাকা',
-    phone: '01712-345678',
-    district: 'ঢাকা',
-    paymentMethod: 'ক্যাশ অন ডেলিভারি',
-    status: 'ডেলিভারি পথে',
-    trackingCode: 'STF-8849201',
-    courier: 'Steadfast Courier'
-  }
-];
+export const INITIAL_ORDERS: OrderItem[] = [];
+
+import AdminPanel from './components/AdminPanel';
 
 export function money(n: number): string {
   return '৳ ' + n.toLocaleString('en-IN');
@@ -171,6 +116,7 @@ const LOCAL_STORAGE_KEY = 'shohojbuy_auth_session';
 const SAVED_LOCATION_KEY = 'shohojbuy_saved_location';
 
 export default function App() {
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState<string>('splash');
   const [splashLoading, setSplashLoading] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<string>('9:41');
@@ -180,7 +126,7 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishes, setWishes] = useState<Product[]>([]);
-  const [currentProduct, setCurrentProduct] = useState<Product>(INITIAL_PRODUCTS[0]);
+  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [selectedColorIndex, setSelectedColorIndex] = useState<number>(0);
 
   // Direct Buy / Checkout Items (either single product or full cart)
@@ -227,18 +173,12 @@ export default function App() {
 
   // Orders State
   const [orders, setOrders] = useState<OrderItem[]>(INITIAL_ORDERS);
-  const [activeTrackOrder, setActiveTrackOrder] = useState<OrderItem>(INITIAL_ORDERS[0]);
+  const [activeTrackOrder, setActiveTrackOrder] = useState<OrderItem | null>(null);
   const [lastPlacedOrder, setLastPlacedOrder] = useState<OrderItem | null>(null);
   const [orderFilterTab, setOrderFilterTab] = useState<'all' | 'to-pay' | 'to-ship' | 'to-receive' | 'to-review' | 'returns'>('all');
 
   // Recently Viewed Products
-  const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([
-    INITIAL_PRODUCTS[1],
-    INITIAL_PRODUCTS[2],
-    INITIAL_PRODUCTS[3],
-    INITIAL_PRODUCTS[0],
-    INITIAL_PRODUCTS[4],
-  ]);
+  const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
 
   // Review & Return Modals
   const [showReviewModal, setShowReviewModal] = useState<boolean>(false);
@@ -283,6 +223,8 @@ export default function App() {
 
   // Authentication & Persistent User State
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
+  const isAdmin = firebaseUser?.email === 'shariartech2010@gmail.com';
+  
   const [userProfile, setUserProfile] = useState<LocalUserProfile | null>(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -337,24 +279,30 @@ export default function App() {
 
   // Real-time Listeners
   useEffect(() => {
-    // 1. Products Listener
-    const qProducts = query(collection(db, 'products'), orderBy('id', 'asc'));
+    // 1. Products Listener (Auto-detects from Admin Panel)
+    const qProducts = query(collection(db, 'products'));
     const unsubProducts = onSnapshot(qProducts, (snapshot) => {
       if (!snapshot.empty) {
         const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
         setProducts(list);
         if (list.length > 0) setCurrentProduct(list[0]);
+      } else {
+        // If admin hasn't added any products, show empty list or dummy data
+        // We will show empty list to reflect reality
+        setProducts([]);
       }
     }, (err) => {
       handleFirestoreError(err, OperationType.LIST, 'products');
     });
 
     // 2. Notices Listener
-    const qNotices = query(collection(db, 'notices'), orderBy('date', 'desc'));
+    const qNotices = query(collection(db, 'notices'));
     const unsubNotices = onSnapshot(qNotices, (snapshot) => {
       if (!snapshot.empty) {
         const list = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as DealNotice));
         setNotices(list);
+      } else {
+        setNotices([]);
       }
     }, (err) => {
       handleFirestoreError(err, OperationType.LIST, 'notices');
@@ -583,7 +531,13 @@ export default function App() {
     }
   }, []);
 
-  // Listen to Firebase Auth state
+  useEffect(() => {
+    if (isAdmin) {
+      setIsAdminOpen(true);
+    }
+  }, [isAdmin]);
+
+  // Auth Listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setFirebaseUser(user);
@@ -690,9 +644,35 @@ export default function App() {
     }
   };
 
+  const handleEmailSignIn = async () => {
+    if (!authPhone.includes('@') || authPassword.length < 6) {
+      showToast('সঠিক ইমেইল ও পাসওয়ার্ড দিন');
+      return;
+    }
+    
+    try {
+      showToast('লগইন হচ্ছে...');
+      const result = await signInWithEmailAndPassword(auth, authPhone.trim(), authPassword);
+      if (result.user) {
+        setShowAuthModal(false);
+        showToast('লগইন সফল হয়েছে');
+        setCurrentScreen('profile');
+      }
+    } catch (error: any) {
+      console.error(error);
+      showToast('ইমেইল বা পাসওয়ার্ড ভুল');
+    }
+  };
+
   // Mobile Sign-Up / Login
   const handleManualAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (authPhone.includes('@')) {
+      handleEmailSignIn();
+      return;
+    }
+
     if (!authPhone.trim()) {
       showToast('অনুগ্রহ করে মোবাইল নম্বর লিখুন');
       return;
@@ -1036,12 +1016,12 @@ export default function App() {
   });
 
   // Category products for detail page
-  const categoryRelatedProducts = products.filter(
+  const categoryRelatedProducts = currentProduct ? products.filter(
     (p) => p.category === currentProduct.category && p.id !== currentProduct.id
-  );
-  const otherCategoryProducts = products.filter(
+  ) : [];
+  const otherCategoryProducts = currentProduct ? products.filter(
     (p) => p.category !== currentProduct.category
-  );
+  ) : [];
 
   const cartSubtotal = cart.reduce((s, p) => s + p.price * p.qty, 0);
   const checkoutSubtotal = (checkoutItems.length > 0 ? checkoutItems : cart).reduce(
@@ -1538,43 +1518,43 @@ export default function App() {
         <BottomNav currentScreen={currentScreen} onNav={navigateTo} cartCount={cart.length} />
       </section>
 
-      {/* 4. PRODUCT DETAIL SCREEN (WITH FLUID UNIFIED SCROLLING & CATEGORY CAROUSEL) */}
-      <section className={`screen ${currentScreen === 'detail' ? 'active' : ''}`} id="detail">
-        {/* Floating Top Nav Actions (Stays pinned cleanly at top while scrolling) */}
-        <div className="detailNavOverlay">
-          <button
-            className="detailExitBtn"
-            onClick={() => navigateTo('home')}
-            title="ফিরে যান"
-            aria-label="ফিরে যান"
-            id="detailBackExitBtn"
-          >
-            ‹
-          </button>
-          <button
-            className="detailHeartBtn"
-            onClick={(e) => toggleWishlist(currentProduct, e)}
-            title={isCurrentProductInWishlist ? 'পছন্দ তালিকা থেকে সরান' : 'পছন্দের তালিকায় রাখুন'}
-            aria-label="পছন্দ"
-          >
-            {isCurrentProductInWishlist ? '♥' : '♡'}
-          </button>
-        </div>
-
-        {/* Unified Scroll View: Product Image, Details, Specs, Category Carousel, and Trending Products */}
-        <div className="detailScroll" id="detailScrollContainer">
-          <div className="detailImg" id="detailImg">
-            {currentProduct.emoji}
+      {currentScreen === 'detail' && currentProduct && (
+        <section className={`screen active`} id="detail">
+          {/* Floating Top Nav Actions (Stays pinned cleanly at top while scrolling) */}
+          <div className="detailNavOverlay">
+            <button
+              className="detailExitBtn"
+              onClick={() => navigateTo('home')}
+              title="ফিরে যান"
+              aria-label="ফিরে যান"
+              id="detailBackExitBtn"
+            >
+              ‹
+            </button>
+            <button
+              className="detailHeartBtn"
+              onClick={(e) => toggleWishlist(currentProduct, e)}
+              title={wishes.some((p) => p.id === currentProduct.id) ? 'পছন্দ তালিকা থেকে সরান' : 'পছন্দের তালিকায় রাখুন'}
+              aria-label="পছন্দ"
+            >
+              {wishes.some((p) => p.id === currentProduct.id) ? '♥' : '♡'}
+            </button>
           </div>
 
-          <div className="detail" id="detailInfo">
-            <small className="brand">{currentProduct.brand} • ক্যাটাগরি: {currentProduct.category}</small>
-            <h1>{currentProduct.name}</h1>
-            <div className="rating">★ {currentProduct.rating} গ্রাহক সন্তুষ্টি</div>
-            <div className="bigprice">
-              {money(currentProduct.price)}{' '}
-              <span className="old">{money(currentProduct.old)}</span>
+          {/* Unified Scroll View: Product Image, Details, Specs, Category Carousel, and Trending Products */}
+          <div className="detailScroll" id="detailScrollContainer">
+            <div className="detailImg" id="detailImg">
+              {currentProduct.emoji}
             </div>
+
+            <div className="detail" id="detailInfo">
+              <small className="brand">{currentProduct.brand} • ক্যাটাগরি: {currentProduct.category}</small>
+              <h1>{currentProduct.name}</h1>
+              <div className="rating">★ {currentProduct.rating} গ্রাহক সন্তুষ্টি</div>
+              <div className="bigprice">
+                {money(currentProduct.price)}{' '}
+                <span className="old">{money(currentProduct.old)}</span>
+              </div>
 
             <b style={{ fontSize: '11px', color: '#253835' }}>কালার বা ভ্যারিয়েন্ট পছন্দ করুন</b>
             <div className="choice">
@@ -1677,20 +1657,21 @@ export default function App() {
         <div className="detailBottom">
           <button
             className="outline"
-            onClick={() => addToCart(currentProduct)}
+            onClick={() => currentProduct && addToCart(currentProduct)}
             id="detailAddCartBtn"
           >
             🛒 কার্ডে যোগ
           </button>
           <button
             className="green"
-            onClick={() => handleBuyNow(currentProduct)}
+            onClick={() => currentProduct && handleBuyNow(currentProduct)}
             id="detailBuyNowBtn"
           >
             ⚡ Bey (এখনই কিনুন)
           </button>
         </div>
       </section>
+      )}
 
       {/* 5. LISTING / SHOP SCREEN */}
       <section className={`screen ${currentScreen === 'listing' ? 'active' : ''}`} id="listing">
@@ -2466,79 +2447,81 @@ export default function App() {
       </section>
 
       {/* 10. ORDER TRACKING SCREEN */}
-      <section className={`screen ${currentScreen === 'tracking' ? 'active' : ''}`} id="tracking">
-        <div className="scroll">
-          <div className="top">
-            <button className="back" onClick={() => navigateTo('profile')}>‹</button>
-            <h2>অর্ডার লাইভ ট্র্যাকিং</h2>
-            <div className="grow"></div>
-          </div>
-          <div className="trackWrap">
-            <div className="orderCard">
-              <div className="orderHeader">
-                <div>
-                  <span className="orderChip">অর্ডার #{activeTrackOrder.id}</span>
-                  <div style={{ fontSize: '9px', color: '#7a8986', marginTop: '3px' }}>
-                    {activeTrackOrder.date}
+      {currentScreen === 'tracking' && activeTrackOrder && (
+        <section className={`screen active`} id="tracking">
+          <div className="scroll">
+            <div className="top">
+              <button className="back" onClick={() => navigateTo('profile')}>‹</button>
+              <h2>অর্ডার লাইভ ট্র্যাকিং</h2>
+              <div className="grow"></div>
+            </div>
+            <div className="trackWrap">
+              <div className="orderCard">
+                <div className="orderHeader">
+                  <div>
+                    <span className="orderChip">অর্ডার #{activeTrackOrder.id}</span>
+                    <div style={{ fontSize: '9px', color: '#7a8986', marginTop: '3px' }}>
+                      {activeTrackOrder.date}
+                    </div>
+                  </div>
+                  <span className={`orderStatusPill ${activeTrackOrder.status === 'ডেলিভারি পথে' ? 'inTransit' : ''}`}>
+                    {activeTrackOrder.status}
+                  </span>
+                </div>
+
+                {/* Items Summary */}
+                <div style={{ background: '#f8faf9', borderRadius: '10px', padding: '10px', margin: '8px 0 12px' }}>
+                  <b style={{ fontSize: '10px', color: '#384d49' }}>অর্ডারকৃত পণ্যসমূহ:</b>
+                  {activeTrackOrder.items.map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', marginTop: '5px' }}>
+                      <span>{item.emoji}</span>
+                      <span style={{ flex: 1, fontWeight: 600 }}>{item.name} × {item.qty}</span>
+                      <b style={{ color: '#07845b' }}>{money(item.price * item.qty)}</b>
+                    </div>
+                  ))}
+                  <div style={{ borderTop: '1px dashed #dbe6e3', marginTop: '8px', paddingTop: '6px', display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 800 }}>
+                    <span>সর্বমোট প্রদেয়:</span>
+                    <span style={{ color: '#07845b' }}>{money(activeTrackOrder.total)}</span>
                   </div>
                 </div>
-                <span className={`orderStatusPill ${activeTrackOrder.status === 'ডেলিভারি পথে' ? 'inTransit' : ''}`}>
-                  {activeTrackOrder.status}
-                </span>
-              </div>
 
-              {/* Items Summary */}
-              <div style={{ background: '#f8faf9', borderRadius: '10px', padding: '10px', margin: '8px 0 12px' }}>
-                <b style={{ fontSize: '10px', color: '#384d49' }}>অর্ডারকৃত পণ্যসমূহ:</b>
-                {activeTrackOrder.items.map((item, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', marginTop: '5px' }}>
-                    <span>{item.emoji}</span>
-                    <span style={{ flex: 1, fontWeight: 600 }}>{item.name} × {item.qty}</span>
-                    <b style={{ color: '#07845b' }}>{money(item.price * item.qty)}</b>
+                {/* Courier Tracking */}
+                <div style={{ fontSize: '10px', color: '#445653', background: '#eef8f4', padding: '8px 10px', borderRadius: '8px', marginBottom: '14px' }}>
+                  <div><b>গ্রাহক:</b> {activeTrackOrder.customerName || custName} ({activeTrackOrder.phone})</div>
+                  <div><b>কুরিয়ার পার্টনার:</b> {activeTrackOrder.courier}</div>
+                  <div><b>ট্র্যাকিং আইডি:</b> <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{activeTrackOrder.trackingCode}</span></div>
+                  <div><b>ডেলিভারি ঠিকানা:</b> {activeTrackOrder.address}</div>
+                </div>
+
+                {/* Timeline Steps */}
+                <div className="timeline">
+                  <div className="step">
+                    <h4>অর্ডার সফলভাবে গৃহীত হয়েছে</h4>
+                    <p>{activeTrackOrder.date}</p>
                   </div>
-                ))}
-                <div style={{ borderTop: '1px dashed #dbe6e3', marginTop: '8px', paddingTop: '6px', display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 800 }}>
-                  <span>সর্বমোট প্রদেয়:</span>
-                  <span style={{ color: '#07845b' }}>{money(activeTrackOrder.total)}</span>
-                </div>
-              </div>
-
-              {/* Courier Tracking */}
-              <div style={{ fontSize: '10px', color: '#445653', background: '#eef8f4', padding: '8px 10px', borderRadius: '8px', marginBottom: '14px' }}>
-                <div><b>গ্রাহক:</b> {activeTrackOrder.customerName || custName} ({activeTrackOrder.phone})</div>
-                <div><b>কুরিয়ার পার্টনার:</b> {activeTrackOrder.courier}</div>
-                <div><b>ট্র্যাকিং আইডি:</b> <span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{activeTrackOrder.trackingCode}</span></div>
-                <div><b>ডেলিভারি ঠিকানা:</b> {activeTrackOrder.address}</div>
-              </div>
-
-              {/* Timeline Steps */}
-              <div className="timeline">
-                <div className="step">
-                  <h4>অর্ডার সফলভাবে গৃহীত হয়েছে</h4>
-                  <p>{activeTrackOrder.date}</p>
-                </div>
-                <div className="step">
-                  <h4>প্রতিনিধি ভেরিফিকেশন ও কল</h4>
-                  <p>কাস্টমার কেয়ার থেকে অর্ডার নিশ্চিত করা হয়েছে</p>
-                </div>
-                <div className="step">
-                  <h4>প্যাকেজিং সম্পন্ন ও প্রস্তুত</h4>
-                  <p>ওয়্যারহাউস থেকে প্রোডাক্ট প্রস্তুত করা হয়েছে</p>
-                </div>
-                <div className="step">
-                  <h4>কুরিয়ার সার্ভিসে হস্তান্তর</h4>
-                  <p>{activeTrackOrder.courier} পার্সেল গ্রহণ করেছে</p>
-                </div>
-                <div className={`step ${activeTrackOrder.status === 'ডেলিভারি সম্পন্ন' ? '' : 'pending'}`}>
-                  <h4>ডেলিভারি সম্পন্ন</h4>
-                  <p>{activeTrackOrder.status === 'ডেলিভারি সম্পন্ন' ? 'গ্রাহক পণ্য গ্রহণ করেছেন ✓' : 'শীঘ্রই ডেলিভারি সম্পন্ন হবে'}</p>
+                  <div className="step">
+                    <h4>প্রতিনিধি ভেরিফিকেশন ও কল</h4>
+                    <p>কাস্টমার কেয়ার থেকে অর্ডার নিশ্চিত করা হয়েছে</p>
+                  </div>
+                  <div className="step">
+                    <h4>প্যাকেজিং সম্পন্ন ও প্রস্তুত</h4>
+                    <p>ওয়্যারহাউস থেকে প্রোডাক্ট প্রস্তুত করা হয়েছে</p>
+                  </div>
+                  <div className="step">
+                    <h4>কুরিয়ার সার্ভিসে হস্তান্তর</h4>
+                    <p>{activeTrackOrder.courier} পার্সেল গ্রহণ করেছে</p>
+                  </div>
+                  <div className={`step ${activeTrackOrder.status === 'ডেলিভারি সম্পন্ন' ? '' : 'pending'}`}>
+                    <h4>ডেলিভারি সম্পন্ন</h4>
+                    <p>{activeTrackOrder.status === 'ডেলিভারি সম্পন্ন' ? 'গ্রাহক পণ্য গ্রহণ করেছেন ✓' : 'শীঘ্রই ডেলিভারি সম্পন্ন হবে'}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <BottomNav currentScreen={currentScreen} onNav={navigateTo} cartCount={cart.length} />
-      </section>
+          <BottomNav currentScreen={currentScreen} onNav={navigateTo} cartCount={cart.length} />
+        </section>
+      )}
 
       {/* 11. PROFILE SCREEN */}
       <section className={`screen ${currentScreen === 'profile' ? 'active' : ''}`} id="profile">
@@ -2805,6 +2788,32 @@ export default function App() {
                 </button>
               </div>
             </div>
+
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => setIsAdminOpen(true)}
+                style={{
+                  background: '#059669',
+                  color: '#fff',
+                  width: 'calc(100% - 32px)',
+                  margin: '0 16px 20px',
+                  padding: '16px',
+                  borderRadius: '16px',
+                  fontWeight: 900,
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  boxShadow: '0 10px 20px rgba(5, 150, 105, 0.2)',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <span style={{ fontSize: '20px' }}>⚙️</span> অ্যাডমিন প্যানেল ওপেন করুন
+              </button>
+            )}
 
             {/* Account Services */}
             <div className="sectionLabel">
@@ -3218,7 +3227,7 @@ export default function App() {
                 className={`authTab ${authTab === 'login' ? 'active' : ''}`}
                 onClick={() => setAuthTab('login')}
               >
-                মোবাইল লগইন
+                লগইন
               </button>
             </div>
 
@@ -3237,11 +3246,11 @@ export default function App() {
               )}
 
               <div className="field">
-                <label>মোবাইল নম্বর</label>
+                <label>{authTab === 'login' ? 'মোবাইল নম্বর বা ইমেইল' : 'মোবাইল নম্বর'}</label>
                 <input
-                  type="tel"
+                  type={authTab === 'login' ? 'text' : 'tel'}
                   required
-                  placeholder="01XXXXXXXXX"
+                  placeholder={authTab === 'login' ? '01XXXXXXXXX বা ইমেইল' : '01XXXXXXXXX'}
                   value={authPhone}
                   onChange={(e) => setAuthPhone(e.target.value)}
                 />
@@ -3990,6 +3999,11 @@ export default function App() {
           </small>
         </div>
       </div>
+
+      {/* ADMIN PANEL */}
+      {isAdminOpen && (
+        <AdminPanel onClose={() => setIsAdminOpen(false)} />
+      )}
 
       {/* TOAST NOTIFICATION */}
       <div

@@ -1,49 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Basic helper functions
-    function isSignedIn() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    // Allow public read for products and notices
-    match /products/{productId} {
-      allow read: if true;
-      allow write: if isSignedIn(); // Add stricter admin check later if needed
-    }
-
-    match /notices/{noticeId} {
-      allow read: if true;
-      allow write: if isSignedIn();
-    }
-
-    // Users can read/write their own profiles
-    match /users/{userId} {
-      allow read, write: if isOwner(userId);
-    }
-
-    // Orders collection
-    match /orders/{orderId} {
-      // Allow creation by anyone (for guest checkout) or signed in users
-      allow create: if true;
-      
-      // Allow read/update if the user is the owner
-      // NOTE: In the app, we must query by userId if we use list
-      allow read, update: if isSignedIn() && (
-        resource.data.userId == request.auth.uid
-      );
-      
-      // Admin bypass (optional, can be added later)
-    }
-
-    // Payment logs
-    match /payment_logs/{logId} {
-      allow create: if true; // Guest checkout can create logs
-      allow read: if isSignedIn();
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }
