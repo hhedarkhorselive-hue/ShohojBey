@@ -54,8 +54,6 @@ import {
   handleFirestoreError,
   OperationType,
 } from './lib/firebase';
-import AdminDashboard from './components/Admin/AdminDashboard';
-import AdminPanel from './components/AdminPanel';
 
 export interface Product {
   id: string | number;
@@ -144,7 +142,6 @@ const LOCAL_STORAGE_KEY = 'shohojbuy_auth_session';
 const SAVED_LOCATION_KEY = 'shohojbuy_saved_location';
 
 export default function App() {
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [currentScreen, setCurrentScreen] = useState<string>('splash');
   const [splashLoading, setSplashLoading] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<string>('9:41');
@@ -2932,34 +2929,6 @@ export default function App() {
               </div>
             </div>
 
-            {isAdmin && (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="button"
-                onClick={() => setIsAdminOpen(true)}
-                style={{
-                  background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-                  color: '#fff',
-                  width: 'calc(100% - 32px)',
-                  margin: '0 16px 20px',
-                  padding: '20px',
-                  borderRadius: '20px',
-                  fontWeight: 900,
-                  fontSize: '15px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '12px',
-                  boxShadow: '0 12px 25px rgba(5, 150, 105, 0.25)',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                <LayoutDashboard size={24} /> Admin Dashboard (Shop Control)
-              </motion.button>
-            )}
-
             {/* Account Services */}
             <div className="sectionLabel">
               <span>⚙️ অ্যাকাউন্ট সেটিংস ও সেবা</span>
@@ -4145,11 +4114,6 @@ export default function App() {
           </small>
         </div>
       </div>
-
-      {/* ADMIN PANEL */}
-      {isAdminOpen && (
-        <AdminDashboard onClose={() => setIsAdminOpen(false)} />
-      )}
 
       {/* TOAST NOTIFICATION */}
       <div
